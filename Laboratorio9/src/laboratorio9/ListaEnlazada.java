@@ -11,12 +11,12 @@ public class ListaEnlazada {
 
     Cabecera cabeza;
 
-    // Constructor: carga la lista de reproducción guardada (si existe)
+    
     public ListaEnlazada() {
         cargarListaDeReproduccion();
     }
 
-    // Método público para agregar una canción y actualizar la persistencia
+    
     public void agregarCancion(String titulo, String artista, String rutaCover, int duracion, String ruta, String genero) {
         Musica nuevaCancion = new Musica(titulo, artista, rutaCover, duracion, ruta, genero);
         Cabecera nuevo = new Cabecera(nuevaCancion);
@@ -32,7 +32,7 @@ public class ListaEnlazada {
         guardarListaDeReproduccion();
     }
 
-    // Método para seleccionar una canción según su índice
+
     public Cabecera seleccionarCancion(int indice) {
         Cabecera temporal = cabeza;
         int contador = 0;
@@ -43,7 +43,6 @@ public class ListaEnlazada {
         return temporal;
     }
 
-    // Método para eliminar una canción y actualizar la persistencia
     public void eliminarCancion(int indice) {
         if (cabeza == null) {
             return;
@@ -66,7 +65,7 @@ public class ListaEnlazada {
         }
     }
 
-    // Método privado para agregar una canción sin guardar (usado al cargar la lista)
+    
     private void agregarCancionDirecta(String titulo, String artista, String rutaCover, int duracion, String ruta, String genero) {
         Musica nuevaCancion = new Musica(titulo, artista, rutaCover, duracion, ruta, genero);
         Cabecera nuevo = new Cabecera(nuevaCancion);
@@ -81,13 +80,13 @@ public class ListaEnlazada {
         }
     }
 
-    // Guarda la lista de reproducción en un archivo de texto
+   
     public void guardarListaDeReproduccion() {
         try (PrintWriter pw = new PrintWriter(new FileWriter("listaReproduccion.txt"))) {
             Cabecera actual = cabeza;
             while (actual != null) {
                 Musica m = actual.musica;
-                // Se separan los campos con "|" en el orden: título|artista|rutaCover|duracion|ruta|genero
+              
                 pw.println(m.getTitulo() + "|" + m.getArtista() + "|" + m.getCoverPath() + "|" + m.getDuracion() + "|" + m.getRuta() + "|" + m.getGenero());
                 actual = actual.siguiente;
             }
@@ -96,13 +95,13 @@ public class ListaEnlazada {
         }
     }
 
-    // Carga la lista de reproducción desde el archivo (si existe) y reconstruye la lista
+   
     public void cargarListaDeReproduccion() {
         File archivo = new File("listaReproduccion.txt");
         if (!archivo.exists()) return;
         try (BufferedReader br = new BufferedReader(new FileReader(archivo))) {
             String linea;
-            cabeza = null; // Limpiar la lista actual
+            cabeza = null; 
             while ((linea = br.readLine()) != null) {
                 String[] partes = linea.split("\\|");
                 if (partes.length == 6) {

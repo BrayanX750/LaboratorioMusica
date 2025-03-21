@@ -13,7 +13,7 @@ public class Musica {
     private int duracion;
     private String coverPath;
     private String ruta;
-    private String genero; // Nuevo atributo
+    private String genero; 
 
     public Musica(String titulo, String artista, String coverPath, int duracion, String ruta, String genero) {
         this.coverPath = coverPath;
@@ -69,7 +69,7 @@ public class Musica {
             musica.writeInt(duracion);
             musica.writeUTF(coverPath);
             musica.writeUTF(ruta);
-            musica.writeUTF(genero); // Escribe el género en el archivo
+            musica.writeUTF(genero); 
         } catch (IOException e){
             System.out.println("No se pudo guardar el archivo de musica!");
         }

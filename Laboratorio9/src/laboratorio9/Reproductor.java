@@ -62,7 +62,7 @@ public class Reproductor extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        // Panel de cabecera con el título
+        
         JPanel headerPanel = new JPanel();
         headerPanel.setBackground(new Color(70, 130, 180));
         JLabel headerLabel = new JLabel("REPRODUCTOR DE MUSICA");
@@ -70,7 +70,7 @@ public class Reproductor extends JFrame {
         headerLabel.setForeground(Color.WHITE);
         headerPanel.add(headerLabel);
 
-        // Panel central con los botones principales usando BoxLayout vertical
+        
         JPanel menuPanel = new JPanel();
         menuPanel.setBackground(new Color(100, 149, 237));
         menuPanel.setLayout(new BoxLayout(menuPanel, BoxLayout.Y_AXIS));
@@ -90,13 +90,13 @@ public class Reproductor extends JFrame {
         menuPanel.add(Box.createRigidArea(new Dimension(0, 20)));
         menuPanel.add(exitButton);
 
-        // Agregar paneles a la ventana principal
+       
         setLayout(new BorderLayout());
         add(headerPanel, BorderLayout.NORTH);
         add(menuPanel, BorderLayout.CENTER);
         setVisible(true);
 
-        // Acción para botón AGREGAR CANCIÓN (nueva disposición usando BoxLayout)
+        
         addButton.addActionListener(e -> {
             JFrame addFrame = new JFrame("AÑADIR CANCIONES");
             addFrame.setSize(400, 600);
@@ -116,7 +116,7 @@ public class Reproductor extends JFrame {
             addPanel.add(addTitle);
             addPanel.add(Box.createRigidArea(new Dimension(0, 15)));
 
-            // Campos de ingreso con paneles horizontales
+          
             JTextField tfNombre = new JTextField(20);
             addPanel.add(createLabeledField("Nombre Cancion:", tfNombre));
 
@@ -126,7 +126,7 @@ public class Reproductor extends JFrame {
             JTextField tfGenero = new JTextField(20);
             addPanel.add(createLabeledField("Género:", tfGenero));
 
-            // Botón para escoger icono
+            
             JPanel iconPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
             iconPanel.setBackground(new Color(176, 224, 230));
             JLabel lblIcon = new JLabel("Imagen:");
@@ -146,11 +146,11 @@ public class Reproductor extends JFrame {
             iconPanel.add(btnIcon);
             addPanel.add(iconPanel);
 
-            // Campo para duración
+           
             JTextField tfDuracion = new JTextField(20);
             addPanel.add(createLabeledField("Duración (seg):", tfDuracion));
 
-            // Botón para escoger archivo mp3
+            
             JPanel mp3Panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
             mp3Panel.setBackground(new Color(176, 224, 230));
             JLabel lblMp3 = new JLabel("Archivo MP3:");
@@ -170,7 +170,7 @@ public class Reproductor extends JFrame {
             mp3Panel.add(btnMp3);
             addPanel.add(mp3Panel);
 
-            // Botón para confirmar la agregación
+            
             JButton btnAddSong = new JButton("AGREGAR CANCIÓN");
             btnAddSong.setAlignmentX(CENTER_ALIGNMENT);
             btnAddSong.addActionListener(actionEvent -> {
@@ -200,7 +200,7 @@ public class Reproductor extends JFrame {
             addFrame.setVisible(true);
         });
 
-        // Acción para botón SELECCIONAR CANCIÓN
+        
         selectButton.addActionListener(e -> {
             lista_C = new JFrame("LISTA DE CANCIONES");
             lista_C.setSize(400, 500);
@@ -216,7 +216,7 @@ public class Reproductor extends JFrame {
         exitButton.addActionListener(e -> System.exit(0));
     }
 
-    // Método auxiliar para crear un panel con etiqueta y campo de texto
+    
     private JPanel createLabeledField(String labelText, JTextField textField) {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         panel.setBackground(new Color(176, 224, 230));
@@ -227,12 +227,12 @@ public class Reproductor extends JFrame {
         return panel;
     }
 
-    // Panel de la lista de canciones con búsqueda y botones
+    
     public JPanel createMusicPanel() {
         JPanel musicPanel = new JPanel(new BorderLayout());
         musicPanel.setBackground(Color.WHITE);
 
-        // Barra de búsqueda en la parte superior
+      
         JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         searchPanel.setBackground(Color.WHITE);
         JTextField searchField = new JTextField(20);
@@ -241,14 +241,14 @@ public class Reproductor extends JFrame {
         searchPanel.add(new JLabel("Buscar: "));
         searchPanel.add(searchField);
 
-        // Lista de canciones
+        
         DefaultListModel<String> songListModel = new DefaultListModel<>();
         JList<String> songList = new JList<>(songListModel);
         songList.setBackground(new Color(240, 255, 240));
         songList.setFont(new Font("Arial", Font.PLAIN, 16));
         songList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-        // Cargar canciones de la lista enlazada
+        
         Cabecera current = listaEnlazada.cabeza;
         while (current != null) {
             Musica musica = current.musica;
@@ -285,7 +285,7 @@ public class Reproductor extends JFrame {
         JScrollPane scrollPane = new JScrollPane(songList);
         scrollPane.setPreferredSize(new Dimension(380, 300));
 
-        // Panel inferior con botones
+        
         JPanel bottomPanel = new JPanel();
         bottomPanel.setBackground(Color.WHITE);
         JButton btnRegresar = new JButton("REGRESAR");
@@ -311,7 +311,7 @@ public class Reproductor extends JFrame {
         bottomPanel.add(btnRegresar);
         bottomPanel.add(btnEliminar);
 
-        // Agregar DocumentListener para búsqueda
+        
         searchField.getDocument().addDocumentListener(new DocumentListener() {
             public void insertUpdate(DocumentEvent e) { filter(); }
             public void removeUpdate(DocumentEvent e) { filter(); }
@@ -338,7 +338,7 @@ public class Reproductor extends JFrame {
         return musicPanel;
     }
 
-    // Panel de reproducción de la canción seleccionada
+    
     private void showNowPlayingPanel(String songTitle, String artistName, String albumArtPath, File file) {
         currentAlbum = songTitle;
         currentDuration = (int) file.length();
@@ -362,7 +362,7 @@ public class Reproductor extends JFrame {
         });
         playingFrame.setAlwaysOnTop(true);
 
-        // Panel para la imagen del álbum
+       
         JLabel albumLabel = new JLabel();
         albumLabel.setHorizontalAlignment(SwingConstants.CENTER);
         if (albumArtPath != null && !albumArtPath.isEmpty()) {
@@ -373,7 +373,7 @@ public class Reproductor extends JFrame {
             albumLabel.setForeground(Color.WHITE);
         }
 
-        // Panel para la información de la canción
+        
         JPanel infoPanel = new JPanel(new BorderLayout());
         infoPanel.setBackground(Color.DARK_GRAY);
         JLabel songLabel = new JLabel(songTitle, SwingConstants.CENTER);
@@ -385,7 +385,7 @@ public class Reproductor extends JFrame {
         infoPanel.add(songLabel, BorderLayout.CENTER);
         infoPanel.add(artistLabel, BorderLayout.SOUTH);
 
-        // Panel de controles (Play/Pause y Stop) usando FlowLayout
+        
         JPanel controlPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         controlPanel.setBackground(Color.LIGHT_GRAY);
         JButton btnPlayPause = new JButton();
@@ -412,7 +412,7 @@ public class Reproductor extends JFrame {
         controlPanel.add(btnPlayPause);
         controlPanel.add(btnStop);
 
-        // Agregar los paneles al frame de reproducción
+        
         playingFrame.setLayout(new BorderLayout());
         playingFrame.add(albumLabel, BorderLayout.NORTH);
         playingFrame.add(infoPanel, BorderLayout.CENTER);
@@ -464,7 +464,7 @@ public class Reproductor extends JFrame {
         }
     }
 
-    private void pauseMusic() {
+    private void pauseMusic() { 
         if (currentPlayer != null && isPlaying) {
             try {
                 playbackPosition += currentPlayer.getPosition();
@@ -478,7 +478,7 @@ public class Reproductor extends JFrame {
 
     private void stopMusic() {
         if (currentPlayer != null) {
-            currentPlayer.close();
+            currentPlayer.close();  
             isPlaying = false;
             isPaused = false;
             playbackPosition = 0;
