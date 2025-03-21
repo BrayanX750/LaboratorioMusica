@@ -9,11 +9,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.Image;
-import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -21,6 +17,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -34,12 +32,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.Player;
-
 
 public class Reproductor extends JFrame {
 
@@ -50,287 +49,206 @@ public class Reproductor extends JFrame {
 
     private String currentAlbum;
     private int currentDuration;
-    private String songAlbum;
-    private int songDuration;
     private int playbackPosition = 0;
     private boolean isSeeking = false;
-    private JPanel musicListPanel;
     private Player currentPlayer;
     private boolean isPlaying = false;
     private boolean isPaused = false;
     private File currentSongFile;
-    private Player play;
 
     public Reproductor() {
         setTitle("REPRODUCTOR DE MUSICA");
-        setSize(400, 500);
+        setSize(500, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        JLabel title = new JLabel("REPRODUCTOR DE MUSICA");
-        title.setForeground(Color.WHITE);
-        title.setFont(new Font("Arial", Font.BOLD, 16));
+        // Panel de cabecera con el título
+        JPanel headerPanel = new JPanel();
+        headerPanel.setBackground(new Color(70, 130, 180));
+        JLabel headerLabel = new JLabel("REPRODUCTOR DE MUSICA");
+        headerLabel.setFont(new Font("Verdana", Font.BOLD, 24));
+        headerLabel.setForeground(Color.WHITE);
+        headerPanel.add(headerLabel);
 
-        JPanel panel = new JPanel();
-        panel.setLayout(new GridBagLayout());
+        // Panel central con los botones principales usando BoxLayout vertical
+        JPanel menuPanel = new JPanel();
+        menuPanel.setBackground(new Color(100, 149, 237));
+        menuPanel.setLayout(new BoxLayout(menuPanel, BoxLayout.Y_AXIS));
+        menuPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        JButton addButton = createButton("AGREGAR CANCIÓN");
+        JButton selectButton = createButton("SELECCIONAR CANCIÓN");
+        JButton exitButton = createButton("SALIR");
 
-        gbc.gridy = 0;
-        panel.add(title, gbc);
+        addButton.setAlignmentX(CENTER_ALIGNMENT);
+        selectButton.setAlignmentX(CENTER_ALIGNMENT);
+        exitButton.setAlignmentX(CENTER_ALIGNMENT);
 
-        gbc.gridy++;
-        gbc.insets = new Insets(20, 0, 20, 0);
+        menuPanel.add(addButton);
+        menuPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        menuPanel.add(selectButton);
+        menuPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        menuPanel.add(exitButton);
 
-        JButton add = createButton("AÑADIR CANCIÓN");
-        JButton elegir = createButton("ELEGIR CANCIÓN");
-        JButton salir = createButton("SALIR");
-
-        panel.add(add, gbc);
-        gbc.gridy++; 
-        panel.add(elegir, gbc);
-        gbc.gridy++;
-        panel.add(salir, gbc);
-
-        panel.setBackground(Color.BLACK);
-
-        add(panel, BorderLayout.CENTER);
-
+        // Agregar paneles a la ventana principal
+        setLayout(new BorderLayout());
+        add(headerPanel, BorderLayout.NORTH);
+        add(menuPanel, BorderLayout.CENTER);
         setVisible(true);
 
-        //add
-        add.addActionListener(e -> {
+        // Acción para botón AGREGAR CANCIÓN (nueva disposición usando BoxLayout)
+        addButton.addActionListener(e -> {
+            JFrame addFrame = new JFrame("AÑADIR CANCIONES");
+            addFrame.setSize(400, 600);
+            addFrame.setLocationRelativeTo(null);
+            addFrame.getContentPane().setBackground(new Color(176, 224, 230));
+            addFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-            JFrame añadir = new JFrame("AÑADIR CANCIONES");
-            añadir.setSize(400, 500);
-            añadir.setVisible(true);
-            añadir.setLocationRelativeTo(null);
-            añadir.getContentPane().setBackground(Color.BLACK);
+            JPanel addPanel = new JPanel();
+            addPanel.setBackground(new Color(176, 224, 230));
+            addPanel.setLayout(new BoxLayout(addPanel, BoxLayout.Y_AXIS));
+            addPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-            JPanel panele = new JPanel(new GridBagLayout());
-            panele.setBackground(Color.BLACK);
-            GridBagConstraints gb = new GridBagConstraints();
-            gb.insets = new Insets(10, 10, 10, 10);
+            JLabel addTitle = new JLabel("AÑADIR CANCIONES");
+            addTitle.setFont(new Font("Arial", Font.BOLD, 18));
+            addTitle.setForeground(Color.DARK_GRAY);
+            addTitle.setAlignmentX(CENTER_ALIGNMENT);
+            addPanel.add(addTitle);
+            addPanel.add(Box.createRigidArea(new Dimension(0, 15)));
 
-            JLabel titleLabel = new JLabel("AÑADIR CANCIONES");
-            titleLabel.setForeground(Color.WHITE);
-            titleLabel.setFont(new Font("Arial", Font.BOLD, 16));
-            gb.gridx = 0;
-            gb.gridy = 0;
-            gb.gridwidth = 2;
-            gb.anchor = GridBagConstraints.CENTER;
-            panele.add(titleLabel, gb);
+            // Campos de ingreso con paneles horizontales
+            JTextField tfNombre = new JTextField(20);
+            addPanel.add(createLabeledField("Nombre Cancion:", tfNombre));
 
-            gb.gridwidth = 1;
-            gb.anchor = GridBagConstraints.WEST;
+            JTextField tfArtista = new JTextField(20);
+            addPanel.add(createLabeledField("Artista:", tfArtista));
 
-            Dimension textFieldSize = new Dimension(200, 25);
+            JTextField tfGenero = new JTextField(20);
+            addPanel.add(createLabeledField("Género:", tfGenero));
 
-            JLabel label1 = new JLabel("Song Title:");
-            label1.setForeground(Color.WHITE);
-            gb.gridx = 0;
-            gb.gridy = 1;
-            panele.add(label1, gb);
-
-            JTextField cancion = new JTextField();
-            cancion.setPreferredSize(textFieldSize);
-            gb.gridx = 1;
-            panele.add(cancion, gb);
-
-            JLabel label2 = new JLabel("Artista:");
-            label2.setForeground(Color.WHITE);
-            gb.gridx = 0;
-            gb.gridy = 2;
-            panele.add(label2, gb);
-
-            JTextField artist = new JTextField();
-            artist.setPreferredSize(textFieldSize);
-            gb.gridx = 1;
-            panele.add(artist, gb);
-
-            JLabel label4 = new JLabel("Cover Path:");
-            label4.setForeground(Color.WHITE);
-            gb.gridx = 0;
-            gb.gridy = 4;
-            panele.add(label4, gb);
-
-            JButton icono = new JButton("Escoger Icono");
-            icono.setPreferredSize(textFieldSize);
-            gb.gridx = 1;
-            panele.add(icono, gb);
-
-            JLabel label5 = new JLabel("Duracion (segundos):");
-            label5.setForeground(Color.WHITE);
-            gb.gridx = 0;
-            gb.gridy = 5;
-            panele.add(label5, gb);
-
-            JTextField textField5 = new JTextField();
-            textField5.setPreferredSize(textFieldSize);
-            gb.gridx = 1;
-            panele.add(textField5, gb);
-
-            JLabel label6 = new JLabel("Escoger Archivo:");
-            label6.setForeground(Color.WHITE);
-            gb.gridx = 0;
-            gb.gridy = 6;
-            panele.add(label6, gb);
-
-            JButton mp3 = new JButton("Escoger Mp3");
-            mp3.setPreferredSize(textFieldSize);
-            gb.gridx = 1;
-            panele.add(mp3, gb);
-
-            JButton addButton = new JButton("AÑADIR CANCION");
-            addButton.setPreferredSize(new Dimension(300, 30));
-            gb.gridx = 0;
-            gb.gridy = 7;
-            gb.gridwidth = 2;
-            gb.anchor = GridBagConstraints.CENTER;
-            panele.add(addButton, gb);
-
-            icono.addActionListener(ex -> {
-                JFileChooser fileChooser = new JFileChooser();
-
-                FileNameExtensionFilter filter = new FileNameExtensionFilter("Image Files (PNG, JPG)", "png", "jpg");
-                fileChooser.setFileFilter(filter);
-
-                int result = fileChooser.showOpenDialog(null);
-
-                if (result == JFileChooser.APPROVE_OPTION) {
-                    File selectedFile = fileChooser.getSelectedFile();
-                    String filePath = selectedFile.getAbsolutePath();
-                    ikon = filePath;
-                    JOptionPane.showMessageDialog(null, "Selected Image: " + selectedFile.getName());
+            // Botón para escoger icono
+            JPanel iconPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            iconPanel.setBackground(new Color(176, 224, 230));
+            JLabel lblIcon = new JLabel("Imagen:");
+            lblIcon.setFont(new Font("Arial", Font.PLAIN, 14));
+            JButton btnIcon = new JButton("Elegir Icono");
+            btnIcon.addActionListener(ex -> {
+                JFileChooser fc = new JFileChooser();
+                FileNameExtensionFilter filter = new FileNameExtensionFilter("Imagenes (PNG, JPG)", "png", "jpg");
+                fc.setFileFilter(filter);
+                if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+                    File file = fc.getSelectedFile();
+                    ikon = file.getAbsolutePath();
+                    JOptionPane.showMessageDialog(null, "Imagen Seleccionada: " + file.getName());
                 }
             });
+            iconPanel.add(lblIcon);
+            iconPanel.add(btnIcon);
+            addPanel.add(iconPanel);
 
-            mp3.addActionListener(ex -> {
-                JFileChooser fileChooser = new JFileChooser();
+            // Campo para duración
+            JTextField tfDuracion = new JTextField(20);
+            addPanel.add(createLabeledField("Duración (seg):", tfDuracion));
 
-                FileNameExtensionFilter filter = new FileNameExtensionFilter("MP3 Files (*.mp3)", "mp3");
-                fileChooser.setFileFilter(filter);
-
-                int result = fileChooser.showOpenDialog(null);
-
-                if (result == JFileChooser.APPROVE_OPTION) {
-                    File selectedFile = fileChooser.getSelectedFile();
-                    String filePath = selectedFile.getAbsolutePath();
-                    ruta = filePath;
-                    JOptionPane.showMessageDialog(null, "Selected Mp3: " + selectedFile.getName());
+            // Botón para escoger archivo mp3
+            JPanel mp3Panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            mp3Panel.setBackground(new Color(176, 224, 230));
+            JLabel lblMp3 = new JLabel("Archivo MP3:");
+            lblMp3.setFont(new Font("Arial", Font.PLAIN, 14));
+            JButton btnMp3 = new JButton("Elegir Archivo MP3");
+            btnMp3.addActionListener(ex -> {
+                JFileChooser fc = new JFileChooser();
+                FileNameExtensionFilter filter = new FileNameExtensionFilter("MP3 (*.mp3)", "mp3");
+                fc.setFileFilter(filter);
+                if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+                    File file = fc.getSelectedFile();
+                    ruta = file.getAbsolutePath();
+                    JOptionPane.showMessageDialog(null, "Mp3 Seleccionado: " + file.getName());
                 }
             });
-            addButton.addActionListener(actionEvent -> {
-                String titulo = cancion.getText();
-                String artista = artist.getText();
-                String coverPath = ikon;
-                String duracion = "";
-                int time = 0;
+            mp3Panel.add(lblMp3);
+            mp3Panel.add(btnMp3);
+            addPanel.add(mp3Panel);
 
+            // Botón para confirmar la agregación
+            JButton btnAddSong = new JButton("AGREGAR CANCIÓN");
+            btnAddSong.setAlignmentX(CENTER_ALIGNMENT);
+            btnAddSong.addActionListener(actionEvent -> {
+                String nombre = tfNombre.getText().trim();
+                String artista = tfArtista.getText().trim();
+                String genero = tfGenero.getText().trim();
+                String duracionStr = tfDuracion.getText().trim();
+                int duracion = 0;
                 try {
-                    duracion = textField5.getText().trim();
-                    time = Integer.parseInt(duracion);
-
-                    System.out.println("Duration is: " + duracion);
+                    duracion = Integer.parseInt(duracionStr);
                 } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(null, "Duracion tiene que ser un numero!", "Input Error", JOptionPane.ERROR_MESSAGE);
-                }
-
-                String path = ruta;
-                if (ikon == null && ruta == null) {
-                    JOptionPane.showMessageDialog(null, "Tiene que escoger un icono y un mp3! ");
+                    JOptionPane.showMessageDialog(null, "La duración debe ser un número.", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-                if (ikon == null) {
-                    JOptionPane.showMessageDialog(null, "Tiene que escoger un archivo mp3! ");
+                if (nombre.isEmpty() || artista.isEmpty() || genero.isEmpty() || duracionStr.isEmpty() || ikon == null || ruta == null) {
+                    JOptionPane.showMessageDialog(null, "Debe completar todos los campos y escoger imagen y mp3.");
                     return;
                 }
-                if (ruta == null) {
-                    JOptionPane.showMessageDialog(null, "Tiene que escoger un icono! ");
-                    return;
-                }
-                if (titulo.isEmpty() || artista.isEmpty() || duracion.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Tiene que llenar todo los espacios!!");
-                } else {
-
-                    listaEnlazada.agregarCancion(titulo, artista, coverPath, time, path);
-                    JOptionPane.showMessageDialog(añadir, "Song added: " + titulo + " by " + artista);
-                    añadir.dispose();
-                }
+                listaEnlazada.agregarCancion(nombre, artista, ikon, duracion, ruta, genero);
+                JOptionPane.showMessageDialog(null, "Canción agregada: " + nombre + " por " + artista);
+                addFrame.dispose();
             });
+            addPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+            addPanel.add(btnAddSong);
 
-            añadir.add(panele);
+            addFrame.add(addPanel);
+            addFrame.setVisible(true);
         });
 
-        //elegir
-        elegir.addActionListener(e -> {
+        // Acción para botón SELECCIONAR CANCIÓN
+        selectButton.addActionListener(e -> {
             lista_C = new JFrame("LISTA DE CANCIONES");
             lista_C.setSize(400, 500);
-            lista_C.setVisible(true);
             lista_C.setLocationRelativeTo(null);
-            lista_C.getContentPane().setBackground(Color.BLACK);
+            lista_C.getContentPane().setBackground(new Color(224, 255, 255));
+            lista_C.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
             JPanel musicPanel = createMusicPanel();
-
-            lista_C.getContentPane().add(musicPanel);
-
-            lista_C.revalidate();
-            lista_C.repaint();
+            lista_C.add(musicPanel);
+            lista_C.setVisible(true);
         });
 
-        
-        salir.addActionListener(e -> {
-            System.exit(0);
-        });
+        exitButton.addActionListener(e -> System.exit(0));
     }
 
+    // Método auxiliar para crear un panel con etiqueta y campo de texto
+    private JPanel createLabeledField(String labelText, JTextField textField) {
+        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        panel.setBackground(new Color(176, 224, 230));
+        JLabel label = new JLabel(labelText);
+        label.setFont(new Font("Arial", Font.PLAIN, 14));
+        panel.add(label);
+        panel.add(textField);
+        return panel;
+    }
+
+    // Panel de la lista de canciones con búsqueda y botones
     public JPanel createMusicPanel() {
         JPanel musicPanel = new JPanel(new BorderLayout());
-        musicPanel.setBackground(Color.BLACK);
+        musicPanel.setBackground(Color.WHITE);
 
-        JPanel searchBarPanel = new JPanel(new BorderLayout());
-        searchBarPanel.setBackground(Color.BLACK);
+        // Barra de búsqueda en la parte superior
+        JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        searchPanel.setBackground(Color.WHITE);
+        JTextField searchField = new JTextField(20);
+        searchField.setFont(new Font("Arial", Font.PLAIN, 16));
+        searchField.setBorder(BorderFactory.createLineBorder(Color.BLUE, 2));
+        searchPanel.add(new JLabel("Buscar: "));
+        searchPanel.add(searchField);
 
-        JTextField searchField = new JTextField();
-        searchField.setFont(new Font("Arial", Font.PLAIN, 18));
-        searchField.setBackground(Color.BLACK);
-        searchField.setForeground(Color.WHITE);
-        searchField.setCaretColor(Color.WHITE);
-        searchField.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
-        searchField.setPreferredSize(new Dimension(250, 40));
-
-        JLabel searchButton = new JLabel("Buscar");
-        searchButton.setFont(new Font("Arial", Font.BOLD, 14));
-        searchButton.setBackground(Color.BLACK);
-        searchButton.setForeground(Color.WHITE);
-        searchButton.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
-
-        searchBarPanel.add(searchField, BorderLayout.CENTER);
-        searchBarPanel.add(searchButton, BorderLayout.WEST);
-
+        // Lista de canciones
         DefaultListModel<String> songListModel = new DefaultListModel<>();
         JList<String> songList = new JList<>(songListModel);
-        songList.setBackground(Color.BLACK);
-        songList.setForeground(Color.WHITE);
+        songList.setBackground(new Color(240, 255, 240));
         songList.setFont(new Font("Arial", Font.PLAIN, 16));
         songList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-        songList.setCellRenderer((list, value, index, isSelected, cellHasFocus) -> {
-            JLabel label = new JLabel(value);
-            label.setBackground(Color.BLACK);
-            label.setForeground(isSelected ? Color.WHITE : Color.GRAY);
-            label.setFont(new Font("Arial", Font.PLAIN, 16));
-
-            if (!isSelected) {
-                label.setOpaque(false);
-            }
-
-            label.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-            return label;
-        });
-
+        // Cargar canciones de la lista enlazada
         Cabecera current = listaEnlazada.cabeza;
         while (current != null) {
             Musica musica = current.musica;
@@ -345,16 +263,16 @@ public class Reproductor extends JFrame {
                 if (!e.getValueIsAdjusting()) {
                     String selectedSong = songList.getSelectedValue();
                     if (selectedSong != null) {
-                        String artistName = selectedSong.split(" - ")[1];
-                        String songTitle = selectedSong.split(" - ")[0];
-
-                       Cabecera temp = listaEnlazada.cabeza;
+                        String[] parts = selectedSong.split(" - ");
+                        if (parts.length < 2) return;
+                        String songTitle = parts[0];
+                        String artistName = parts[1];
+                        Cabecera temp = listaEnlazada.cabeza;
                         while (temp != null) {
                             Musica musica = temp.musica;
                             if (musica.getTitulo().equals(songTitle) && musica.getArtista().equals(artistName)) {
-                                String albumArtPath = musica.getCoverPath();
                                 File songFile = new File(musica.getRuta());
-                                showNowPlayingPanel(songTitle, artistName, albumArtPath, songFile);
+                                showNowPlayingPanel(songTitle, artistName, musica.getCoverPath(), songFile);
                                 break;
                             }
                             temp = temp.siguiente;
@@ -364,89 +282,63 @@ public class Reproductor extends JFrame {
             }
         });
 
-        JScrollPane songListScrollPane = new JScrollPane(songList);
-        songListScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        songListScrollPane.setPreferredSize(new Dimension(400, 300));
+        JScrollPane scrollPane = new JScrollPane(songList);
+        scrollPane.setPreferredSize(new Dimension(380, 300));
 
-        musicPanel.add(searchBarPanel, BorderLayout.NORTH);
-        musicPanel.add(songListScrollPane, BorderLayout.CENTER);
-        JButton returnButton = new JButton("REGRESAR");
-        returnButton.setFont(new Font("Arial", Font.BOLD, 14));
-        returnButton.setBackground(Color.BLACK);
-        returnButton.setForeground(Color.WHITE);
-        returnButton.setFocusPainted(false);
-        returnButton.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
-        returnButton.addActionListener(e -> {
-            lista_C.dispose();
-        });
-
+        // Panel inferior con botones
         JPanel bottomPanel = new JPanel();
-        bottomPanel.setBackground(Color.BLACK);
-        bottomPanel.add(returnButton);
-
-        musicPanel.add(searchBarPanel, BorderLayout.NORTH);
-        musicPanel.add(songListScrollPane, BorderLayout.CENTER);
-        musicPanel.add(bottomPanel, BorderLayout.SOUTH);
-
-        searchField.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
-            @Override
-            public void insertUpdate(javax.swing.event.DocumentEvent e) {
-                filterMusic();
+        bottomPanel.setBackground(Color.WHITE);
+        JButton btnRegresar = new JButton("REGRESAR");
+        btnRegresar.addActionListener(e -> lista_C.dispose());
+        JButton btnEliminar = new JButton("ELIMINAR");
+        btnEliminar.addActionListener(e -> {
+            int index = songList.getSelectedIndex();
+            if (index == -1) {
+                JOptionPane.showMessageDialog(null, "Seleccione una canción para eliminar.");
+            } else {
+                String selectedSong = songListModel.get(index);
+                String[] parts = selectedSong.split(" - ");
+                if (parts.length < 2) return;
+                String songTitle = parts[0];
+                if (currentAlbum != null && currentAlbum.equals(songTitle)) {
+                    stopMusic();
+                }
+                listaEnlazada.eliminarCancion(index);
+                songListModel.remove(index);
+                JOptionPane.showMessageDialog(null, "Canción eliminada.");
             }
+        });
+        bottomPanel.add(btnRegresar);
+        bottomPanel.add(btnEliminar);
 
-            @Override
-            public void removeUpdate(javax.swing.event.DocumentEvent e) {
-                filterMusic();
-            }
+        // Agregar DocumentListener para búsqueda
+        searchField.getDocument().addDocumentListener(new DocumentListener() {
+            public void insertUpdate(DocumentEvent e) { filter(); }
+            public void removeUpdate(DocumentEvent e) { filter(); }
+            public void changedUpdate(DocumentEvent e) { filter(); }
 
-            @Override
-            public void changedUpdate(javax.swing.event.DocumentEvent e) {
-                filterMusic();
-            }
-
-            private void filterMusic() {
-                String searchText = searchField.getText().toLowerCase();
-                DefaultListModel<String> songListModel = (DefaultListModel<String>) songList.getModel();
-
+            private void filter() {
+                String query = searchField.getText().toLowerCase();
                 songListModel.clear();
-
                 Cabecera current = listaEnlazada.cabeza;
                 while (current != null) {
                     Musica musica = current.musica;
                     String song = musica.getTitulo() + " - " + musica.getArtista();
-
-                    if (song.toLowerCase().contains(searchText)) {
+                    if (song.toLowerCase().contains(query)) {
                         songListModel.addElement(song);
                     }
-
                     current = current.siguiente;
                 }
             }
-
         });
 
-        songList.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                int index = songList.locationToIndex(e.getPoint());
-                if (index != -1) {
-                    songList.repaint();
-                    songList.setSelectedIndex(index);
-                }
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                int index = songList.locationToIndex(e.getPoint());
-                if (index != -1) {
-                    songList.repaint();
-                }
-            }
-        });
-
+        musicPanel.add(searchPanel, BorderLayout.NORTH);
+        musicPanel.add(scrollPane, BorderLayout.CENTER);
+        musicPanel.add(bottomPanel, BorderLayout.SOUTH);
         return musicPanel;
     }
 
+    // Panel de reproducción de la canción seleccionada
     private void showNowPlayingPanel(String songTitle, String artistName, String albumArtPath, File file) {
         currentAlbum = songTitle;
         currentDuration = (int) file.length();
@@ -455,81 +347,77 @@ public class Reproductor extends JFrame {
             stopMusic();
         }
 
-        JFrame nowPlayingDialog = new JFrame("Reproduciendo");
-        nowPlayingDialog.setLayout(new BorderLayout());
-
-        nowPlayingDialog.setSize(400, 500);
-        nowPlayingDialog.setResizable(true);
-        nowPlayingDialog.getContentPane().setBackground(Color.BLACK);
-        nowPlayingDialog.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        nowPlayingDialog.addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-
+        JFrame playingFrame = new JFrame("Reproduciendo");
+        playingFrame.setSize(400, 500);
+        playingFrame.setLocationRelativeTo(null);
+        playingFrame.setResizable(true);
+        playingFrame.getContentPane().setBackground(Color.DARK_GRAY);
+        playingFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        playingFrame.addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent e) {
                 stopMusic();
                 currentSongFile = null;
-                nowPlayingDialog.dispose();
+                playingFrame.dispose();
             }
         });
-        nowPlayingDialog.setAlwaysOnTop(true);
+        playingFrame.setAlwaysOnTop(true);
 
-        
-        JLabel albumArtLabel = new JLabel();
-        albumArtLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        albumArtLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
+        // Panel para la imagen del álbum
+        JLabel albumLabel = new JLabel();
+        albumLabel.setHorizontalAlignment(SwingConstants.CENTER);
         if (albumArtPath != null && !albumArtPath.isEmpty()) {
-            albumArtLabel.setIcon(new ImageIcon(new ImageIcon(albumArtPath).getImage().getScaledInstance(250, 250, Image.SCALE_SMOOTH)));
+            ImageIcon icon = new ImageIcon(new ImageIcon(albumArtPath).getImage().getScaledInstance(250, 250, Image.SCALE_SMOOTH));
+            albumLabel.setIcon(icon);
         } else {
-            albumArtLabel.setText("No Artwork Available");
-            albumArtLabel.setForeground(Color.WHITE);
+            albumLabel.setText("Sin Imagen");
+            albumLabel.setForeground(Color.WHITE);
         }
 
-        
-        JPanel songInfoPanel = new JPanel();
-        songInfoPanel.setLayout(new GridLayout(2, 1));
-        songInfoPanel.setBackground(Color.BLACK);
-
-        JLabel titleLabel = new JLabel(songTitle, SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        titleLabel.setForeground(Color.WHITE);
-
+        // Panel para la información de la canción
+        JPanel infoPanel = new JPanel(new BorderLayout());
+        infoPanel.setBackground(Color.DARK_GRAY);
+        JLabel songLabel = new JLabel(songTitle, SwingConstants.CENTER);
+        songLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        songLabel.setForeground(Color.WHITE);
         JLabel artistLabel = new JLabel(artistName, SwingConstants.CENTER);
         artistLabel.setFont(new Font("Arial", Font.PLAIN, 18));
-        artistLabel.setForeground(Color.GRAY);
+        artistLabel.setForeground(Color.LIGHT_GRAY);
+        infoPanel.add(songLabel, BorderLayout.CENTER);
+        infoPanel.add(artistLabel, BorderLayout.SOUTH);
 
-        songInfoPanel.add(titleLabel);
-        songInfoPanel.add(artistLabel);
-
-        
-        JPanel controlsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
-        controlsPanel.setBackground(Color.WHITE);
-
-        JButton playPauseButton = new JButton();
-        ImageIcon icon = new ImageIcon("DefaultIMAGE/play.png");
-        playPauseButton.setIcon(icon);
-        playPauseButton.setBackground(Color.WHITE);
-        playPauseButton.setForeground(Color.WHITE);
-
-        playPauseButton.addActionListener(e -> {
+        // Panel de controles (Play/Pause y Stop) usando FlowLayout
+        JPanel controlPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+        controlPanel.setBackground(Color.LIGHT_GRAY);
+        JButton btnPlayPause = new JButton();
+        ImageIcon playIcon = new ImageIcon("DefaultIMAGE/play.png");
+        btnPlayPause.setIcon(playIcon);
+        btnPlayPause.addActionListener(e -> {
             if (isPlaying && !isPaused) {
                 pauseMusic();
-                playPauseButton.setIcon(icon);
+                btnPlayPause.setIcon(playIcon);
             } else if (isPaused) {
                 resumeMusic();
-                playPauseButton.setIcon(new ImageIcon("DefaultIMAGE/pause.png"));
+                btnPlayPause.setIcon(new ImageIcon("DefaultIMAGE/pause.png"));
             } else {
                 playMusic(file);
-                playPauseButton.setIcon(new ImageIcon("DefaultIMAGE/pause.png"));
+                btnPlayPause.setIcon(new ImageIcon("DefaultIMAGE/pause.png"));
             }
         });
+        JButton btnStop = new JButton("Stop");
+        btnStop.addActionListener(e -> {
+            stopMusic();
+            playbackPosition = 0;
+            btnPlayPause.setIcon(playIcon);
+        });
+        controlPanel.add(btnPlayPause);
+        controlPanel.add(btnStop);
 
-        controlsPanel.add(playPauseButton);
-
-        nowPlayingDialog.add(albumArtLabel, BorderLayout.NORTH);
-        nowPlayingDialog.add(songInfoPanel, BorderLayout.CENTER);
-        nowPlayingDialog.add(controlsPanel, BorderLayout.SOUTH);
-
-        nowPlayingDialog.setLocation(1100, Toolkit.getDefaultToolkit().getScreenSize().height - nowPlayingDialog.getHeight() - 250);
-        nowPlayingDialog.setVisible(true);
+        // Agregar los paneles al frame de reproducción
+        playingFrame.setLayout(new BorderLayout());
+        playingFrame.add(albumLabel, BorderLayout.NORTH);
+        playingFrame.add(infoPanel, BorderLayout.CENTER);
+        playingFrame.add(controlPanel, BorderLayout.SOUTH);
+        playingFrame.setVisible(true);
     }
 
     private void playMusic(File file) {
@@ -538,12 +426,11 @@ public class Reproductor extends JFrame {
             currentPlayer = new Player(new FileInputStream(file));
             isPlaying = true;
             isPaused = false;
-            System.out.println("Stopping music: " + (currentSongFile != null ? currentSongFile.getName() : "None"));
-            System.out.println("Starting music: " + file.getName());
             new Thread(() -> {
                 try {
                     currentPlayer.play();
                     isPlaying = false;
+                    playbackPosition = 0;
                 } catch (JavaLayerException e) {
                     e.printStackTrace();
                 }
@@ -556,13 +443,12 @@ public class Reproductor extends JFrame {
     private void resumeMusic() {
         if (currentSongFile != null && isPaused) {
             try {
-                FileInputStream fileInputStream = new FileInputStream(currentSongFile);
-                currentPlayer = new Player(fileInputStream);
-
+                FileInputStream fis = new FileInputStream(currentSongFile);
+                currentPlayer = new Player(fis);
                 isSeeking = true;
                 new Thread(() -> {
                     try {
-                        fileInputStream.skip(playbackPosition);
+                        fis.skip(playbackPosition);
                         currentPlayer.play();
                         isSeeking = false;
                         isPlaying = false;
@@ -570,15 +456,11 @@ public class Reproductor extends JFrame {
                         e.printStackTrace();
                     }
                 }).start();
-
                 isPlaying = true;
                 isPaused = false;
-                System.out.println("Resumed from position: " + playbackPosition + " ms");
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        } else {
-            System.out.println("No song to resume.");
         }
     }
 
@@ -588,7 +470,6 @@ public class Reproductor extends JFrame {
                 playbackPosition += currentPlayer.getPosition();
                 stopMusic();
                 isPaused = true;
-                System.out.println("Paused at position: " + playbackPosition + " ms");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -600,20 +481,21 @@ public class Reproductor extends JFrame {
             currentPlayer.close();
             isPlaying = false;
             isPaused = false;
+            playbackPosition = 0;
         }
     }
 
     private JButton createButton(String text) {
-        JButton button = new JButton(text);
-        button.setBackground(Color.BLACK);
-        button.setForeground(Color.WHITE);
-        button.setBorder(BorderFactory.createLineBorder(Color.WHITE));
-        button.setFocusPainted(false);
-        button.setPreferredSize(new Dimension(300, 50));
-        return button;
+        JButton btn = new JButton(text);
+        btn.setPreferredSize(new Dimension(250, 40));
+        btn.setFont(new Font("Arial", Font.BOLD, 16));
+        btn.setBackground(Color.BLACK);
+        btn.setForeground(Color.WHITE);
+        btn.setFocusPainted(false);
+        return btn;
     }
 
     public static void main(String[] args) {
-        Reproductor list = new Reproductor();
+        new Reproductor();
     }
 }

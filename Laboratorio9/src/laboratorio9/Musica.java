@@ -13,13 +13,15 @@ public class Musica {
     private int duracion;
     private String coverPath;
     private String ruta;
+    private String genero; // Nuevo atributo
 
-    public Musica(String titulo, String artista, String coverPath, int duracion, String ruta) {
+    public Musica(String titulo, String artista, String coverPath, int duracion, String ruta, String genero) {
         this.coverPath = coverPath;
         this.titulo = titulo;
         this.artista = artista;
         this.duracion = duracion;
         this.ruta = ruta;
+        this.genero = genero;
         try {
             init();
         } catch (IOException e) {
@@ -46,11 +48,15 @@ public class Musica {
     public String getCoverPath() {
         return coverPath;
     }
+    
+    public String getGenero() {
+        return genero;
+    }
 
     @Override
     public String toString() {
         return "Canción: " + titulo + " por: " + artista 
-                + " (Cover: " + coverPath + ")";
+                + " (Cover: " + coverPath + ", Género: " + genero + ")";
     }
 
     private void init() throws IOException {
@@ -63,6 +69,7 @@ public class Musica {
             musica.writeInt(duracion);
             musica.writeUTF(coverPath);
             musica.writeUTF(ruta);
+            musica.writeUTF(genero); // Escribe el género en el archivo
         } catch (IOException e){
             System.out.println("No se pudo guardar el archivo de musica!");
         }
