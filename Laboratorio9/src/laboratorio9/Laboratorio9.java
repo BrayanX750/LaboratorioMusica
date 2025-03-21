@@ -9,7 +9,7 @@ package laboratorio9;
  * @author Usuario
  */
 public class Laboratorio9 {
-
+  
     /**
      * @param args the command line arguments
      */
